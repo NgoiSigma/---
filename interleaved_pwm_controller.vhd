@@ -144,3 +144,43 @@ begin
     end process;
 
 end Behavioral;
+-- Добавленные сигналы внутри архитектуры interleaved_pwm_controller
+signal soft_start_duty : unsigned(10 downto 0) := (others => '0');
+signal soft_start_cnt  : unsigned(7 downto 0)  := (others => '0');
+
+-- Скорость нарастания: увеличиваем уставку на 1 такт каждые 4 периода ШИМ
+constexpr integer SOFT_START_DIVIDER = 4; 
+
+-- Внутри процесса генерации ШИМ для ФАЗЫ 1 (принятие целевой уставки):
+if charge_enable = '1' then
+    -- Логика Мягкого Старта (Soft-Start Engine)
+    if count_p1 = 0 then -- Синхронизируем шаг нарастания с началом периода ШИМ
+        if soft_start_duty < unsigned(duty_cycle) then
+            if soft_start_cnt >= to_unsigned(SOFT_START_DIVIDER - 1, 8) then
+                soft_start_duty <= soft_start_duty + 1; -- Плавный инкремент заполнения
+                soft_start_cnt  <= (others => '0');
+            else
+                soft_start_cnt <= soft_start_cnt + 1;
+            end if;
+        else
+            soft_start_duty <= unsigned(duty_cycle); -- Выход на целевую уставку процессора
+        end if;
+    end if;
+
+    -- Теперь сравнение идет не с целевым duty_cycle, а с динамическим soft_start_duty
+    if count_p1 < soft_start_duty then
+        phase1_gh <= '1';
+        phase1_gl <= '0';
+    elsif count_p1 >= soft_start_duty and count_p1 < (soft_start_duty + DEAD_TIME_CYCLES) then
+        phase1_gh <= '0';
+        phase1_gl <= '0';
+    else
+        phase1_gh <= '0';
+        phase1_gl <= '1';
+    end if;
+else
+    phase1_gh       <= '0';
+    phase1_gl       <= '0';
+    soft_start_duty <= (others => '0'); -- Сброс контура мягкого старта при отключении
+    soft_start_cnt  <= (others => '0');
+end if;
