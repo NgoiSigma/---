@@ -1,0 +1,25 @@
+[Unit]
+Description=NOVEYA ATOM Real-Time Dispatch Daemon
+After=network.target can0.service postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+ExecStart=/opt/novea_atom/bin/novea_daemon --config /etc/novea/config.json
+Restart=always
+RestartSec=3
+
+# Задаем политику планировщика реального времени
+# SCHED_FIFO гарантирует, что поток не будет прерван обычными процессами
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=90
+
+# Ограничения безопасности
+User=novea_user
+Group=dialout
+NoNewPrivileges=yes
+ProtectSystem=full
+ReadWritePaths=/var/log/novea /dev/can0
+
+[Install]
+WantedBy=multi-user.target
