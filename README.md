@@ -115,3 +115,35 @@
 ### 2. JSON REST API (Управление и внешние запросы)
 *   **GET** `/api/v1/sections/{section_id}/status` — Запрос текущего энергетического статуса фидерной секции сети.
 *   **POST** `/api/v1/vehicles/{vehicle_id}/control` — Дистанционное изменение уставки или сброс блокировки КЗ центральным диспетчером.
+
+### 1. Код на Python
+* Реализация математического ядра Σ-FDL, включающая классы `NoveaAtomEngine` и `NoveaDispatcherSupervisor`.
+* Тестовые сценарии API с использованием `pytest` и `requests` для проверки записи данных в TimescaleDB.
+* Полный скрипт асинхронного Telegram-бота диспетчера на базе `aiogram` v3.x (`dispatch_bot.py`).
+
+### 2. Низкоуровневый код на C++ (Синтаксис C++17)
+* Заголовочный файл и реализация ядра `NoveaAtomEngine.hpp` и `NoveaAtomEngine.cpp`.
+* Парсер пакетов CAN-шины `CanJ1939Parser.hpp`.
+* Модуль GSM/MQTT-передачи данных `MqttDispatcherGateway.hpp`.
+* Модуль самодиагностики кинетического инерцоида `InerterDiagnostics.hpp`.
+* Модуль фиксации коротких замыканий при динамической зарядке `FeederProtection.hpp`.
+* Циклический кольцевой буфер энергонезависимого логера `EepromStorageLogger.hpp`.
+* Код процессора (ARM Cortex-A7) для генерации 24-битного SPI-сообщения с CRC-8 (`NoveaCoreSpiMaster`).
+* Три демонстрационных файла `main.cpp` с примерами сквозной интеграции, сборки модулей и тестирования контуров безопасности.
+
+### 3. Код для ПЛИС на VHDL
+* Модуль управления переключением силовых ключей `charging_gate_controller.vhd`.
+* Двухфазный (интерливинг) ШИМ-контроллер `interleaved_pwm_controller.vhd`.
+* Модуль интеграции ПЛИС с шиной данных SPI `spi_pwm_bridge.vhd`.
+* Расширенный SPI-мост с модулем проверки CRC-8 `spi_pwm_crc_bridge.vhd`.
+* Скрипт автоматической верификации (Testbench) `spi_pwm_crc_bridge_tb.vhd`.
+
+### 4. Скрипты развертывания, базы данных и конфигурации
+* Архитектура кросс-компиляции в `CMakeLists.txt`.
+* Скрипт линкера `linker_script.ld` для микроконтроллеров ARM Cortex-M4.
+* Bash-скрипт автоматического развертывания `deploy_all.sh`.
+* Bash-скрипт автоматического бэкапа в облако `db_backup.sh`.
+* SQL-скрипты для инициализации расширений PostGIS/TimescaleDB и создания гипертаблицы `vehicle_telemetry_hyper`.
+* Шаблоны конфигураций Systemd: `novea-atom.service`, `novea-backup.service` и `novea-backup.timer`.
+* Шаблон Cron-задачи для ночной ротации отчетов `/etc/cron.d/novea_atom_reporter`.
+* Настройка веб-сервера Nginx для Webhook-соединений диспетчерского бота.
