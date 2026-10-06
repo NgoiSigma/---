@@ -1,0 +1,11 @@
+[Unit]
+Description=Automated TimescaleDB Backup Service for Novea Atom
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=postgres
+ExecStart=/bin/bash /opt/novea_atom/scripts/db_backup.sh
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=novea-backup
