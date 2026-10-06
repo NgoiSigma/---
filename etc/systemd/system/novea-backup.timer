@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Novea Atom Database Backup Nightly
+
+[Timer]
+# Запуск каждую ночь в 2 часа ночи
+OnCalendar=*-*-* 02:00:00
+# Если сервер был выключен в 02:00, запустить бэкап сразу после включения
+Persistent=true
+
+[Install]
+WantedBy=timers.target
