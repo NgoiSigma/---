@@ -1,0 +1,7 @@
+# /etc/cron.d/novea_atom_reporter: ротация и агрегация отчетов «НОВЕЯ АТОМ»
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=dispatcher@tracking.mkrada.gov.ua
+
+# Запуск скрипта автоматического сбора логов каждую ночь в 00:05
+5 0 * * * root /opt/novea_atom/scripts/deploy_all.sh --generate-report >> /var/log/novea_atom_cron.log 2>&1
